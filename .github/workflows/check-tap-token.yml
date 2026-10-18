@@ -1,0 +1,30 @@
+name: Check tap token
+
+# Run by hand to confirm HOMEBREW_TAP_TOKEN can still write to the Homebrew
+# tap, for example after creating or renewing it. Changes nothing.
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the token's access to pingstack-io/homebrew-tap
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::HOMEBREW_TAP_TOKEN isn't set."
+            exit 1
+          fi
+          push="$(gh api repos/pingstack-io/homebrew-tap --jq .permissions.push)" || {
+            echo "::error::The token can't read pingstack-io/homebrew-tap. Check it's for the pingstack-io owner, includes homebrew-tap, and hasn't expired or been left pending approval."
+            exit 1
+          }
+          if [ "$push" != "true" ]; then
+            echo "::error::The token can read the tap but can't write to it. Give it Contents: Read and write."
+            exit 1
+          fi
+          echo "HOMEBREW_TAP_TOKEN can write to pingstack-io/homebrew-tap."
