@@ -3,6 +3,9 @@
 #
 #   curl -fsSL https://pingstack.io/install.sh | sh
 #
+# pingstack.io/install.sh serves a copy of this file from the sales site;
+# copy any change there too.
+#
 # PINGSTACK_VERSION=v1.0.0 picks a release (default: the latest).
 # PINGSTACK_INSTALL_DIR picks where it goes (default: /usr/local/bin when
 # writable, otherwise ~/.local/bin).
