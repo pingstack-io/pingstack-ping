@@ -23,7 +23,7 @@ brew install pingstack-io/tap/pingstack
 **macOS and Linux (install script)**
 
 ```bash
-curl -fsSL https://pingstack.io/install.sh | sh
+curl -fsSL https://github.com/pingstack-io/pingstack-ping/releases/latest/download/install.sh | sh
 ```
 
 The script picks the right build for your machine, checks it against the

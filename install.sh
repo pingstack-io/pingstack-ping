@@ -1,10 +1,10 @@
 #!/bin/sh
 # Installs the pingstack command from its GitHub release.
 #
-#   curl -fsSL https://pingstack.io/install.sh | sh
+#   curl -fsSL https://github.com/pingstack-io/pingstack-ping/releases/latest/download/install.sh | sh
 #
-# pingstack.io/install.sh serves a copy of this file from the sales site;
-# copy any change there too.
+# Each release attaches this file (see .goreleaser.yaml), so the link above
+# always serves the latest release's copy.
 #
 # PINGSTACK_VERSION=v1.0.0 picks a release (default: the latest).
 # PINGSTACK_INSTALL_DIR picks where it goes (default: /usr/local/bin when

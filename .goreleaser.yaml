@@ -48,6 +48,9 @@ release:
   github:
     owner: pingstack-io
     name: pingstack-ping
+  # Served as releases/latest/download/install.sh, the README's install command.
+  extra_files:
+    - glob: ./install.sh
 
 homebrew_casks:
   - name: pingstack
