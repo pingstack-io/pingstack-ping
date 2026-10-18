@@ -1,0 +1,72 @@
+# Builds every platform from this repo and publishes the GitHub release and
+# the Homebrew cask in pingstack-io/homebrew-tap. Run by .github/workflows/release.yml.
+version: 2
+
+project_name: pingstack
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: pingstack
+    main: ./cmd/pingstack
+    binary: pingstack
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - id: pingstack
+    # No version in the name, so releases/latest/download/<name> always works.
+    name_template: "pingstack_{{ .Os }}_{{ .Arch }}"
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  use: github
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  github:
+    owner: pingstack-io
+    name: pingstack-ping
+
+homebrew_casks:
+  - name: pingstack
+    binaries: [pingstack]
+    homepage: https://pingstack.io
+    description: Report scheduled jobs to a Pingstack heartbeat check
+    license: MIT
+    repository:
+      owner: pingstack-io
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    commit_author:
+      name: pingstack-release
+      email: noreply@pingstack.io
+    # The binaries aren't notarized yet, so clear the quarantine flag macOS
+    # sets on downloads; otherwise Gatekeeper blocks the first run.
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/pingstack"]
+          end
