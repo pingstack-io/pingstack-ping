@@ -42,20 +42,31 @@ and put `pingstack` (`pingstack.exe`) on your `PATH`.
    anyone who has it can report to your check.
 3. Put `pingstack run --` in front of the job's command.
 
-A crontab entry:
+Keep the URL in a file only the job's user can read, not in the crontab or a
+script in version control:
+
+```bash
+install -m 600 /dev/null ~/.pingstack-backup
+read -rs URL && printf 'PINGSTACK_PING_URL=%s\n' "$URL" > ~/.pingstack-backup
+```
+
+A crontab entry (cron's `PATH` is short, so use the full path to `pingstack`):
 
 ```
-PINGSTACK_PING_URL=https://pingstack.io/ping/YOUR_TOKEN
-0 2 * * * pingstack run -- /usr/local/bin/backup.sh
+0 2 * * * set -a; . "$HOME/.pingstack-backup"; /usr/local/bin/pingstack run -- /opt/jobs/backup.sh
 ```
 
-A systemd service:
+A systemd service, with the same `PINGSTACK_PING_URL=...` line in a root-only
+environment file:
 
 ```ini
 [Service]
-Environment=PINGSTACK_PING_URL=https://pingstack.io/ping/YOUR_TOKEN
-ExecStart=/usr/local/bin/pingstack run -- /usr/local/bin/backup.sh
+Type=oneshot
+EnvironmentFile=/etc/pingstack/backup.env
+ExecStart=/usr/local/bin/pingstack run -- /opt/jobs/backup.sh
 ```
+
+More setups are in the [Pingstack docs](https://docs.pingstack.io/integrations/pingstack-cli/).
 
 ## What it sends
 
