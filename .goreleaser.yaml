@@ -55,7 +55,7 @@ release:
 homebrew_casks:
   - name: pingstack
     binaries: [pingstack]
-    homepage: https://pingstack.io
+    homepage: https://pingstack.io/
     description: Report scheduled jobs to a Pingstack heartbeat check
     license: MIT
     repository:
@@ -69,7 +69,7 @@ homebrew_casks:
     # sets on downloads; otherwise Gatekeeper blocks the first run.
     hooks:
       post:
-        install: |
-          if OS.mac?
-            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/pingstack"]
+        install_steps: |
+          on_macos do
+            run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{ .StagedPath }}/pingstack"]
           end
